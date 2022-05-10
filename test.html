@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <table id="table"></table>
+    <!-- <table>
+        <th>
+            <tr>2</tr>
+            <tr>4</tr>
+            <tr>2</tr>
+            <tr>2</tr>
+        </th>
+        <th>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+        </th>
+        <th>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+        </th>
+        <th>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+        </th>
+    </table>
+ -->
+    <button id="button">Move Down</button>
+    <button id="buttonUp">Move Up</button>
+    <button id="buttonLeft">Move Left</button>
+    <button id="buttonRight">Move Right</button>
+    <button id="flipButton">Flip the Grid!</button>
+    <button id="rotateBack">Flip back</button>
+</body>
+
+<script>
+    const table = document.querySelector('table');
+    const buttonDown = document.getElementById('button');
+    const buttonUp = document.getElementById('buttonUp');
+    const buttonLeft = document.getElementById('buttonLeft');
+    const buttonRight = document.getElementById('buttonRight');
+    const flipButton = document.querySelector('#flipButton');
+    const flipBackBtn = document.querySelector('#rotateBack');
+    
+    
+    //Drawing the dom elements
+    function giveArr() {
+        return [[2, 0, 4, 4],
+                [0, 0, 2, 2],
+                [0, 0, 0, 0],
+                [2, 0, 0, 2]];
+    }
+    
+    let arr = [[2, 0, 4, 4],
+                [0, 0, 2, 2],
+                [0, 0, 0, 0],
+                [2, 0, 0, 2]];
+
+    function emptyGrid() {
+        return [[0, 0, 0, 0],
+        [0, 0, 0, 0], 
+        [0, 0, 0, 0], 
+        [0, 0, 0, 0]];
+    }
+
+    function drawGrid(arr) {
+        for (let i = 0; i < 4; i++) {
+            let th = document.createElement('th');
+            th.setAttribute('id', `${i}`);
+            table.insertAdjacentElement('beforeend', th);
+            
+            for (let j = 0; j < 4; j++) {
+                const m = document.getElementById(`${i}`);
+                let tr = document.createElement('tr');   
+                tr.textContent = arr[i][j];
+                m.insertAdjacentElement('beforeend', tr);
+            }
+        }
+    }
+
+    //_____________________________________________________
+    //Rotating the grid
+    function clearGrid() {
+        table.innerHTML = ''
+    }
+
+    function rotate(arr) {
+        let newGrid = emptyGrid();
+        for(let i = 0; i < 4; i++) {
+            for(j = 0; j < 4; j++) {
+                newGrid[i][j] = arr[j][i];
+            }
+        }
+        //console.log(newGrid)
+        return newGrid;
+    }
+
+    function rotateBack(arr) {
+        let prevGrid = emptyGrid();
+        for(let i = 0; i < 4; i++) {
+            for(j = 0; j < 4; j++) {
+                prevGrid[j][i] = arr[j][i];
+            }
+        }
+
+        return prevGrid;
+    }
+
+    function flipGrid() {
+        let array = rotate(arr);
+        clearGrid();
+        drawGrid(array);
+    }
+
+    function flipGridBack() {
+        let array = rotateBack(arr);
+        clearGrid();
+        drawGrid(array);
+    }
+
+    
+    //Moving the tiles Down
+    function slide(arr) {
+        
+        let newArr = arr.filter(el => el == 0);
+        let leftArr = arr.filter(el => el);
+        arr = newArr.concat(leftArr);
+                    
+        return arr;
+    } 
+
+    function double(arr) {        
+            for(let i = 0; i < 3; i++) {
+            if (arr[i] == arr[i + 1]) {
+                arr[i + 1] *= 2;
+                arr[i] = 0;
+            }
+        }
+        
+        return arr;
+    }
+
+    function adjustDown() {  
+        for( let i = 0; i < 4; i++) {
+            arr[i] = slide(arr[i]);
+            arr[i] = double(arr[i]);
+            arr[i] = slide(arr[i]);            
+        }           
+        clearGrid();
+        drawGrid(arr);
+        
+        return arr;
+    }
+
+    //Moving the tiles Up
+
+    function slideUp(arr) {
+        let newArr = arr.filter(el => el == 0);
+        let leftArr = arr.filter(el => el);
+        arr = leftArr.concat(newArr);
+                    
+        return arr;
+    }
+
+    function adjustUp() { 
+        for( let i = 0; i < 4; i++) {
+            arr[i] = slideUp(arr[i]);
+            arr[i] = double(arr[i]);
+            arr[i] = slideUp(arr[i]);            
+        }           
+        clearGrid();
+        drawGrid(arr);
+        
+        return arr;
+    }
+
+    drawGrid(arr)
+
+    //Events
+    buttonDown.addEventListener('click', adjustDown);
+    buttonUp.addEventListener('click', adjustUp);
+    flipButton.addEventListener('click', flipGrid);
+    flipBackBtn.addEventListener('click', flipGridBack)
+    
+</script>
+</html>
